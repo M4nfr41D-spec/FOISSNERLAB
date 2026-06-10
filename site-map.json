@@ -1,0 +1,26 @@
+{
+  "pages": [
+    "index.html",
+    "ueber-uns.html",
+    "blog.html",
+    "support.html",
+    "downloads.html",
+    "kontakt.html"
+  ],
+  "colors": {
+    "background": "#050706",
+    "background_2": "#0b100d",
+    "text": "#f1eee6",
+    "text_soft": "rgba(241,238,230,.72)",
+    "lime": "#b7ff00"
+  },
+  "fonts": {
+    "heading": "Poppins",
+    "body": "Figtree"
+  },
+  "notes": [
+    "Dark-Lab Optik mit hohem Kontrast",
+    "subtile Scroll-Animationen via IntersectionObserver",
+    "Button-System angelehnt an das SAWARO Premium Neon Button Kit"
+  ]
+}
