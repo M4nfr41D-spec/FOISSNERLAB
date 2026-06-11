@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Foissner Lab – Downloads</title>
-  <meta name="description" content="Download- und Preview-Hub für Foissner Lab Tools und Elementor-Komponenten.">
+  <title>Foissner Lab – Game & Tool Labs</title>
+  <meta name="description" content="Standalone-Tools, Game-Demos, Audio-Labs und Flow-Builder im Foissner Lab.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -22,7 +22,7 @@
     </a>
     <nav class="nav">
       <a href="index.html">Start</a>
-      <a href="game-labs.html">Game Labs</a>
+      <a href="game-labs.html" class="active">Game Labs</a>
       <a href="elementor-lab.html">Elementor Lab</a>
       <a href="downloads.html">Downloads</a>
       <a href="kontakt.html">Kontakt</a>
@@ -39,14 +39,37 @@
 </header>
 
 <main>
-  <section class="section">
+  <section class="hero">
+    <div class="container hero-layout">
+      <div class="hero-copy">
+        <span class="kicker reveal">FOISSNER LAB · Tool Library</span>
+        <h1 class="reveal">Spielbar. Testbar. Weiterentwickelbar.</h1>
+        <p class="reveal">Dieser Bereich sammelt die echten Standalone-Tools: vom Mini-Shooter über den ACID-303 bis zum Process Flow Builder. Nicht als statische Screenshots, sondern als direkt ausführbare Browser-Labs.</p>
+        <div class="hero-actions reveal">
+          <a class="btn cta" href="tools/lime-defender.html"><img src="assets/icons/lightning-power.png" alt=""> <span>Demo starten</span></a>
+          <a class="btn normal" href="tools/manifest.json"><img src="assets/icons/code-document-curly-braces.png" alt=""> <span>Manifest öffnen</span></a>
+        </div>
+      </div>
+      <div class="hero-panel reveal-right">
+        <div class="mini-terminal">
+          <div class="term-top"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <div class="term-line"><strong>TOOLS</strong> 4 Standalone Labs geladen</div>
+          <div class="term-line"><strong>MODE</strong> Browser-first · no build step</div>
+          <div class="term-line"><strong>STACK</strong> HTML · CSS · JavaScript</div>
+          <div class="term-line"><strong>OUTPUT</strong> Preview + Download-ready</div>
+          <div class="meter"><span></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section compact">
     <div class="container">
       <div class="section-head center reveal">
-        <span class="kicker">Downloads</span>
-        <h1>Tools, Demos und UI-Bausteine zum direkten Einsatz.</h1>
-        <p>Die Download-Seite ist jetzt kein Platzhalter mehr, sondern ein echter Hub mit Preview-Links zu Standalone-Tools und Elementor-kompatiblen Snippets.</p>
+        <span class="kicker">Standalone Labs</span>
+        <h2>Vier Module, die sofort im Browser laufen.</h2>
+        <p>Die Karten führen direkt zu den hochgeladenen Tools. Für GitHub Pages oder Netlify bleiben die Pfade bewusst schlicht und wartbar.</p>
       </div>
-      <div class="grid-3 reveal-stagger">
+      <div class="grid-4 reveal-stagger">
         
       <article class="card dark">
         <div class="card-icon"><img src="assets/icons/open-box-modules.png" alt=""></div>
@@ -76,47 +99,6 @@
         <p>Visueller Editor für HTML- und Style-Bausteine mit Preview-Logik und editierbarem Aufbau.</p>
         <a class="card-link" href="tools/html-text-editor.html">Öffnen</a>
       </article>
-      <article class="card dark">
-        <div class="card-icon"><img src="assets/icons/open-box-modules.png" alt=""></div>
-        <span class="badge">Snippet</span>
-        <h3 style="margin-top:14px">Stat Counter</h3>
-        <p>Animierter Zahlenwert für Kennzahlen, Erfahrung, Projekte oder Performance-Zähler.</p>
-        <a class="card-link" href="elementor-snippets/stat-counter.html">Öffnen</a>
-      </article>
-      <article class="card dark">
-        <div class="card-icon"><img src="assets/icons/open-box-modules.png" alt=""></div>
-        <span class="badge">Snippet</span>
-        <h3 style="margin-top:14px">Section Head</h3>
-        <p>Sauberer Section-Header mit Eyebrow, Titel und Unterzeile im FOISSNER-LAB-Stil.</p>
-        <a class="card-link" href="elementor-snippets/section-head.html">Öffnen</a>
-      </article>
-      <article class="card dark">
-        <div class="card-icon"><img src="assets/icons/open-box-modules.png" alt=""></div>
-        <span class="badge">Snippet</span>
-        <h3 style="margin-top:14px">Glass Card</h3>
-        <p>Frosted-Glass Card mit Chamfer-Kante, Lichtkante und Lime-Hover.</p>
-        <a class="card-link" href="elementor-snippets/glass-card.html">Öffnen</a>
-      </article>
-      </div>
-    </div>
-  </section>
-  <section class="section compact">
-    <div class="container grid-2">
-      <div class="card dark reveal-left">
-        <span class="kicker">Tool Labs</span>
-        <h2 style="margin-top:14px">Für Browser-Demos und eigenständige Werkzeuge.</h2>
-        <p>Mini-Shooter, ACID-303, HTML Text Editor und Process Flow Builder laufen als eigenständige HTML-Dateien. Ideal für Netlify, GitHub Pages oder direkte lokale Tests.</p>
-        <div class="btn-row" style="margin-top:18px">
-          <a class="btn cta" href="game-labs.html"><img src="assets/icons/lightning-power.png" alt=""> <span>Game Labs öffnen</span></a>
-        </div>
-      </div>
-      <div class="card reveal-right">
-        <span class="kicker">Elementor</span>
-        <h2 style="margin-top:14px">Für schnelle UI-Bausteine.</h2>
-        <p>Die Snippets sind als einzelne HTML-Widget-Bausteine gedacht. Erst isoliert prüfen, dann gezielt in Elementor einbauen.</p>
-        <div class="btn-row" style="margin-top:18px">
-          <a class="btn normal" href="elementor-lab.html"><img src="assets/icons/app-grid.png" alt=""> <span>Elementor Lab öffnen</span></a>
-        </div>
       </div>
     </div>
   </section>

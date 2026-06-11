@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FOISSNER Process Flow Builder v3.1</title>
+<style>
+:root{
+  --bg:#f3f6f7;
+  --paper:#ffffff;
+  --paper2:#f7fafb;
+  --ink:#161b1e;
+  --muted:#5a6670;
+  --soft:#8b98a0;
+  --line:#dce4e7;
+  --anth:#303a40;
+  --anth2:#414d54;
+  --lime:#82e84f;
+  --lime2:#58b931;
+  --limeDim:#eafbe3;
+  --blue:#4f7da8;
+  --blueDim:#eef6ff;
+  --amber:#c49625;
+  --amberDim:#fff6df;
+  --red:#c05555;
+  --redDim:#fff0f0;
+  --violet:#7867b7;
+  --violetDim:#f2efff;
+  --shadow:0 1px 3px rgba(0,0,0,.05),0 12px 30px rgba(0,0,0,.06);
+  --r:18px;
+}
+[data-mode="dark"]{
+  --bg:#101416;
+  --paper:#171d20;
+  --paper2:#20282c;
+  --ink:#f1f5f6;
+  --muted:#b7c2c7;
+  --soft:#7e8a91;
+  --line:#334047;
+  --anth:#090d0f;
+  --anth2:#1b2428;
+  --lime:#82e84f;
+  --lime2:#82e84f;
+  --limeDim:rgba(130,232,79,.13);
+  --blue:#74a9d4;
+  --blueDim:rgba(116,169,212,.13);
+  --amber:#d6ac3d;
+  --amberDim:rgba(214,172,61,.13);
+  --red:#d87878;
+  --redDim:rgba(216,120,120,.13);
+  --violet:#a899e6;
+  --violetDim:rgba(168,153,230,.13);
+}
+[data-theme="print"]{
+  --bg:#fff;--paper:#fff;--paper2:#fff;--ink:#111;--muted:#444;--soft:#666;--line:#cfcfcf;
+  --anth:#333;--anth2:#555;--lime:#111;--lime2:#111;--limeDim:#f3f3f3;
+  --blue:#333;--blueDim:#f3f3f3;--amber:#555;--amberDim:#f5f5f5;--red:#444;--redDim:#f6f6f6;--violet:#333;--violetDim:#f4f4f4;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:Inter,Segoe UI,Arial,sans-serif;line-height:1.42;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit}
+.app{min-height:100vh;display:flex;flex-direction:column}
+.top{
+  background:var(--anth);
+  color:#fff;
+  border-bottom:5px solid var(--lime);
+  padding:16px 20px;
+  box-shadow:var(--shadow);
+}
+.topin{max-width:1720px;margin:0 auto;display:flex;gap:18px;align-items:center;justify-content:space-between}
+.kicker{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7);font-weight:900}
+h1{margin:4px 0 0;color:var(--lime);font-size:24px;line-height:1.05;letter-spacing:-.02em}
+.top p{margin:4px 0 0;color:#d8e1e5;font-size:13px}
+.tools{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+button,select{
+  border:1px solid rgba(255,255,255,.14);
+  background:var(--anth2);
+  color:#fff;
+  border-radius:12px;
+  padding:9px 11px;
+  font-size:12.5px;
+  font-weight:850;
+  cursor:pointer;
+}
+button:hover,select:hover{filter:brightness(1.06)}
+button.primary{background:var(--lime);color:#17300f;border-color:transparent}
+button.warn{background:var(--amber);border-color:transparent}
+button.red{background:var(--red);border-color:transparent}
+button.light{background:var(--paper);color:var(--ink);border-color:var(--line)}
+.main{max-width:1720px;width:100%;margin:0 auto;padding:16px;display:grid;grid-template-columns:355px 1fr 345px;gap:16px;flex:1}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.head{background:var(--paper2);border-bottom:1px solid var(--line);padding:13px 15px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.head h2{font-size:15px;margin:0}
+.body{padding:14px 15px}
+.canvasCard{display:flex;flex-direction:column;min-height:780px}
+.canvas{
+  position:relative;flex:1;min-height:720px;overflow:hidden;cursor:grab;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(58,67,73,.12) 1px, transparent 0) 0 0/22px 22px,
+    var(--bg);
+}
+.canvas.dragging{cursor:grabbing}
+#mount{position:absolute;inset:0}
+svg{user-select:none}
+.statusPill{position:absolute;left:12px;bottom:12px;background:var(--paper);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:999px;padding:7px 10px;color:var(--muted);font-size:12px;font-weight:850}
+.sectionTitle{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);font-weight:950;margin:13px 0 7px}
+.quickgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.quickgrid button{background:var(--paper2);color:var(--ink);border-color:var(--line);text-align:left;min-height:48px}
+.quickgrid button b{display:block;font-size:12.5px}
+.quickgrid button span{display:block;font-size:11px;color:var(--muted);font-weight:650;margin-top:2px}
+.outline{border:1px solid var(--line);border-radius:14px;overflow:auto;max-height:255px}
+.outlineItem{padding:9px 10px;border-bottom:1px solid var(--line);font-size:12.5px;color:var(--muted);display:grid;grid-template-columns:24px 1fr;gap:7px;cursor:pointer}
+.outlineItem:last-child{border-bottom:0}
+.outlineItem.active{background:var(--limeDim);color:var(--ink)}
+.outlineItem strong{color:var(--ink);font-size:12.5px}
+.outlineItem small{display:block;color:var(--muted);font-size:11px}
+.typeDot{width:18px;height:18px;border-radius:999px;margin-top:1px;border:1px solid var(--line)}
+textarea,input,select.panelSelect{
+  width:100%;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);padding:8px 9px;font-size:13px;
+}
+textarea{min-height:76px;resize:vertical}
+.jsonBox{min-height:260px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#101416;color:#e8f0f2;font-size:11.5px;line-height:1.45}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);font-weight:950;margin-bottom:4px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btnrow{display:flex;flex-wrap:wrap;gap:7px}
+.msgs{display:grid;gap:7px;max-height:190px;overflow:auto}
+.msg{border:1px solid var(--line);border-radius:12px;background:var(--paper2);padding:8px 9px;font-size:12px;color:var(--muted)}
+.msg.error{background:var(--redDim);border-color:rgba(192,85,85,.3);color:var(--red)}
+.msg.warn{background:var(--amberDim);border-color:rgba(196,150,37,.3);color:#876111}
+.msg.ok{background:var(--limeDim);border-color:rgba(88,185,49,.3);color:var(--lime2)}
+.pill{display:inline-flex;align-items:center;border:1px solid rgba(130,232,79,.32);background:var(--limeDim);border-radius:999px;color:var(--lime2);font-size:11px;font-weight:900;padding:5px 8px}
+.edgeList{max-height:150px;overflow:auto;border:1px solid var(--line);border-radius:12px}
+.edgeItem{padding:7px 8px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted);cursor:pointer;display:flex;justify-content:space-between;gap:8px}
+.edgeItem:last-child{border-bottom:0}
+.edgeItem.active{background:var(--limeDim);color:var(--ink)}
+details{border:1px solid var(--line);border-radius:14px;background:var(--paper2);margin-top:12px;overflow:hidden}
+summary{cursor:pointer;padding:10px 12px;font-weight:900;font-size:13px;color:var(--ink)}
+details .detailBody{padding:0 12px 12px}
+.footer{max-width:1720px;width:100%;margin:0 auto;padding:0 16px 14px;color:var(--soft);font-size:12px;text-align:right}
+.node{cursor:move}
+.node.selected .shape{stroke:var(--lime2)!important;stroke-width:3!important}
+.edgeHit{stroke:transparent;stroke-width:18;fill:none;cursor:pointer}
+.edgeVisual.selected{stroke:var(--lime2)!important;stroke-width:5!important}
+@media(max-width:1360px){.main{grid-template-columns:355px 1fr}.inspect{grid-column:1/-1}.topin{flex-direction:column;align-items:flex-start}.tools{justify-content:flex-start}}
+@media(max-width:900px){.main{grid-template-columns:1fr}.canvas{min-height:620px}}
+@media print{
+  .top,.left,.inspect,.head,.footer,.statusPill{display:none!important}
+  .main{display:block;max-width:none;padding:0}
+  .card{border:0;box-shadow:none}
+  .canvas{height:100vh;overflow:visible;background:#fff}
+  #mount{position:static;height:100vh}
+}
+</style>
+</head>
+<body data-mode="light" data-theme="deva">
+<div class="app">
+<header class="top">
+  <div class="topin">
+    <div>
+      <div class="kicker">Standalone Flow Engine · No Mermaid · No Figma Runtime</div>
+      <h1>FOISSNER Process Flow Builder v3.1</h1>
+      <p>Smart Process Map mit Decision-Branches, Parallel-Split/Merge, saubereren Shapes, kontrollierter Textlänge und formularbasierter Eingabe.</p>
+    </div>
+    <div class="tools">
+      <select id="layoutMode">
+        <option value="map">Smart process map</option>
+        <option value="swimlane">Swimlane map</option>
+        <option value="tree">Decision tree</option>
+      </select>
+      <select id="themeMode">
+        <option value="deva">Anthracite / Lime</option>
+        <option value="print">Print safe</option>
+      </select>
+      <button id="darkBtn">Dark / Light</button>
+      <button id="demoBtn">Reset demo</button>
+      <button class="primary" id="layoutBtn">Auto layout</button>
+      <button id="fitBtn">Fit</button>
+      <button id="svgBtn">Export SVG</button>
+      <button id="pngBtn">Export PNG</button>
+      <button id="jsonBtn">Export JSON</button>
+      <button class="warn" id="printBtn">Print</button>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <section class="card left">
+    <div class="head">
+      <h2>Flow Builder</h2>
+      <span class="pill" id="selPill">No selection</span>
+    </div>
+    <div class="body">
+      <div class="sectionTitle">Quick add</div>
+      <div class="quickgrid">
+        <button id="addTask"><b>+ Task</b><span>after selected node</span></button>
+        <button id="addDecision"><b>+ Decision</b><span>with yes / no</span></button>
+        <button id="addParallel"><b>+ Parallel</b><span>split + merge</span></button>
+        <button id="addMerge"><b>+ Merge</b><span>join branches</span></button>
+        <button id="addNote"><b>+ Note</b><span>dashed annotation</span></button>
+        <button id="addEnd"><b>+ End</b><span>finish branch</span></button>
+      </div>
+
+      <div class="sectionTitle">Process outline</div>
+      <div class="outline" id="outline"></div>
+
+      <details>
+        <summary>Advanced JSON</summary>
+        <div class="detailBody">
+          <textarea id="jsonInput" class="jsonBox" spellcheck="false"></textarea>
+          <div class="btnrow" style="margin-top:8px">
+            <button class="primary" id="applyJson">Apply JSON</button>
+            <button id="copyJson">Copy JSON</button>
+          </div>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section class="card canvasCard">
+    <div class="head">
+      <div>
+        <h2>Diagram Canvas</h2>
+        <span class="pill" id="modePill">Smart process map</span>
+      </div>
+      <div class="btnrow">
+        <button class="light" id="zoomIn">+</button>
+        <button class="light" id="zoomOut">−</button>
+        <button class="light" id="resetView">Reset view</button>
+      </div>
+    </div>
+    <div class="canvas" id="canvas">
+      <div id="mount"></div>
+      <div class="statusPill" id="viewStatus">Zoom 100%</div>
+    </div>
+  </section>
+
+  <aside class="card inspect">
+    <div class="head">
+      <h2>Inspector</h2>
+      <span id="validStatus" class="pill">Ready</span>
+    </div>
+    <div class="body">
+      <div class="sectionTitle">Selected node</div>
+      <div class="row">
+        <div class="field"><label>ID</label><input id="nodeId"></div>
+        <div class="field"><label>Shape</label><select id="nodeType" class="panelSelect"></select></div>
+      </div>
+      <div class="field"><label>Label</label><input id="nodeLabel"></div>
+      <div class="field"><label>Description</label><textarea id="nodeBody"></textarea></div>
+      <div class="row">
+        <div class="field"><label>Lane</label><input id="nodeLane"></div>
+        <div class="field"><label>Owner</label><input id="nodeOwner"></div>
+      </div>
+      <div class="field"><label>Output</label><input id="nodeOutput"></div>
+      <div class="row">
+        <div class="field"><label>X</label><input id="nodeX" type="number"></div>
+        <div class="field"><label>Y</label><input id="nodeY" type="number"></div>
+      </div>
+      <div class="btnrow">
+        <button class="primary" id="saveNode">Save node</button>
+        <button class="red" id="deleteNode">Delete</button>
+      </div>
+
+      <div class="sectionTitle">Connectors</div>
+      <div class="edgeList" id="edgeList"></div>
+      <div class="row" style="margin-top:10px">
+        <div class="field"><label>From</label><input id="edgeFrom"></div>
+        <div class="field"><label>To</label><input id="edgeTo"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Label</label><input id="edgeLabel"></div>
+        <div class="field"><label>Type</label><select id="edgeType" class="panelSelect">
+          <option value="normal">Normal</option>
+          <option value="yes">Yes / Go</option>
+          <option value="no">No / Stop</option>
+          <option value="loop">Loop back</option>
+          <option value="parallel">Parallel</option>
+          <option value="merge">Merge</option>
+          <option value="escalation">Escalation</option>
+          <option value="dashed">Dashed reference</option>
+        </select></div>
+      </div>
+      <div class="btnrow">
+        <button class="primary" id="saveEdge">Save edge</button>
+        <button id="addEdge">Add edge</button>
+        <button class="red" id="deleteEdge">Delete edge</button>
+      </div>
+
+      <div class="sectionTitle">Validation</div>
+      <div class="msgs" id="messages"></div>
+    </div>
+  </aside>
+</main>
+<div class="footer">Created by Ing. Manfred Foissner · All rights reserved · Nutzungsrecht für interne Projekt- und Kundenkommunikation</div>
+</div>
+
+<script>
+"use strict";
+
+const SHAPES = [
+  ["start","Start pill"],
+  ["end","End pill"],
+  ["task","Task rectangle"],
+  ["decision","Decision diamond"],
+  ["data","Data / input-output"],
+  ["document","Document"],
+  ["database","Database cylinder"],
+  ["subprocess","Subprocess"],
+  ["merge","Merge circle"],
+  ["note","Annotation"]
+];
+
+const DEMO = {
+  title:"Recovery Pilot für die Feustner GmbH",
+  subtitle:"Fiktives Demo mit ungültigen Kundennamen und ungültigen Artikelbezügen. Zweck: vollständige Flow-Logik zeigen, nicht reale Kundendaten abbilden.",
+  lanes:["Datenbasis","Bewertung","Freigabe","Kundenkommunikation"],
+  nodes:[
+    {id:"start",type:"start",label:"Start",body:"Drei Demo-Positionen liegen zur Bewertung vor.",lane:"Datenbasis",owner:"Account Owner",output:"Prüfauftrag",x:90,y:250},
+    {id:"request",type:"data",label:"Anfrage + Demo-Artikel erfassen",body:"FST-0000-X91 / X42 / X77 und DMO-3KB-VOID-A01/B02/C03 werden als ungültige Testartikel geführt.",lane:"Datenbasis",owner:"Innendienst",output:"Minimaldatensatz",x:330,y:250},
+    {id:"complete",type:"decision",label:"Datensatz vollständig?",body:"Sind fiktive Artikelnummer, Preisbasis, Menge und Anfrage sauber zugeordnet?",lane:"Datenbasis",owner:"Sales",output:"Go / Nacharbeit",x:610,y:240},
+    {id:"repair",type:"task",label:"Daten nachziehen",body:"Fehlende Zuordnung, Preisbasis oder Menge korrigieren. Danach erneute Prüfung.",lane:"Datenbasis",owner:"Sales Support",output:"korrigierte Daten",x:610,y:470},
+    {id:"split",type:"merge",label:"Split",body:"Drei parallele Prüfpfade starten.",lane:"Bewertung",owner:"Account Owner",output:"Parallelprüfung",x:910,y:265},
+    {id:"history",type:"task",label:"Historie prüfen",body:"Dauerläufer, Wiederholartikel, Sonderteil oder Einmalposition bestimmen.",lane:"Bewertung",owner:"Sales",output:"Historienprofil",x:1120,y:120},
+    {id:"cost",type:"task",label:"Kostenbasis prüfen",body:"Material, Setup, Fertigung, Zuschläge und sinnvolle Mindestlosgröße erfassen.",lane:"Bewertung",owner:"Kalkulation",output:"Break-even-MOQ",x:1120,y:305},
+    {id:"signal",type:"task",label:"Kundensignal bewerten",body:"Würde eine harte Anpassung das alte Schadensmuster wiederholen?",lane:"Bewertung",owner:"Account Owner",output:"Recovery-Relevanz",x:1120,y:490},
+    {id:"assess",type:"merge",label:"Merge",body:"Historie, Kostenbasis und Kundensignal zusammenführen.",lane:"Bewertung",owner:"Account Owner",output:"Bewertungsbasis",x:1420,y:305},
+    {id:"economic",type:"decision",label:"Bei MOQ wirtschaftlich?",body:"Kann Preisstabilität über Mindestlosgröße oder Bündelung dargestellt werden?",lane:"Bewertung",owner:"Account Owner + Kalkulation",output:"Option A/B/C/D",x:1660,y:285},
+
+    {id:"optA",type:"subprocess",label:"A · Preis halten bei MOQ",body:"Beste Recovery-Variante. Preis bleibt bei klarer Mindestlosgröße stabil.",lane:"Freigabe",owner:"Sales",output:"A-Linie",x:1980,y:70},
+    {id:"optB",type:"subprocess",label:"B · MOQ statt Preisschock",body:"Kleinmenge ist rot, Bündelung oder Mindestlosgröße macht sie vertretbar.",lane:"Freigabe",owner:"Sales + Kalkulation",output:"B-Linie",x:1980,y:245},
+    {id:"optC",type:"subprocess",label:"C · Bridge mit Review",body:"Strategisch relevant, kurzfristig schwach. Befristeter Übergangspreis mit Review.",lane:"Freigabe",owner:"GF + Sales",output:"C-Linie",x:1980,y:420},
+    {id:"optD",type:"subprocess",label:"D · Sonderfall isolieren",body:"Strukturell negativ oder echter Einmalfall. Nicht als allgemeine Kundenlogik kommunizieren.",lane:"Freigabe",owner:"GF",output:"D-Linie",x:1980,y:595},
+
+    {id:"gate",type:"decision",label:"GF-Freigabe erteilt?",body:"Keine pauschale +50%-Antwort ohne sauber geprüfte Linie.",lane:"Freigabe",owner:"GF / Account Owner",output:"Freigabe / Revision",x:2340,y:320},
+    {id:"revise",type:"task",label:"Linie überarbeiten",body:"Annahmen, MOQ, Bridge oder Sonderfall neu ausrichten. Danach erneut zur Freigabe.",lane:"Freigabe",owner:"Account Owner",output:"revidierte Linie",x:2340,y:610},
+    {id:"message",type:"document",label:"Kundenfähige Linie",body:"Preislogik, MOQ, Gültigkeit, Review-Punkt und Begründung konsistent formulieren.",lane:"Kundenkommunikation",owner:"Account Owner",output:"Follow-up",x:2680,y:320},
+    {id:"followup",type:"task",label:"Follow-up durchführen",body:"Eine klare, widerspruchsfreie Rückmeldung geben. Keine parallelen Ad-hoc-Aussagen.",lane:"Kundenkommunikation",owner:"Account Owner",output:"Kundenalignment",x:3000,y:320},
+    {id:"end",type:"end",label:"Ende",body:"Freigegebene, wirtschaftlich und kommunikativ tragfähige Kundenlinie.",lane:"Kundenkommunikation",owner:"Account Owner",output:"abgeschlossen",x:3260,y:320},
+
+    {id:"note",type:"note",label:"No-Go-Regel",body:"Pauschale Zielpreisweitergabe ohne MOQ-/Recovery-Prüfung ist nicht zulässig.",lane:"Freigabe",owner:"Management Gate",output:"Stop-Regel",x:1600,y:610}
+  ],
+  edges:[
+    {from:"start",to:"request",label:"Trigger",type:"normal"},
+    {from:"request",to:"complete",label:"prüfen",type:"normal"},
+    {from:"complete",to:"split",label:"Ja",type:"yes"},
+    {from:"complete",to:"repair",label:"Nein",type:"no"},
+    {from:"repair",to:"complete",label:"erneut prüfen",type:"loop"},
+    {from:"split",to:"history",label:"Pfad 1",type:"parallel"},
+    {from:"split",to:"cost",label:"Pfad 2",type:"parallel"},
+    {from:"split",to:"signal",label:"Pfad 3",type:"parallel"},
+    {from:"history",to:"assess",label:"Profil",type:"merge"},
+    {from:"cost",to:"assess",label:"MOQ",type:"merge"},
+    {from:"signal",to:"assess",label:"Signal",type:"merge"},
+    {from:"assess",to:"economic",label:"bewerten",type:"normal"},
+    {from:"economic",to:"optA",label:"Ja",type:"yes"},
+    {from:"economic",to:"optB",label:"Ja, aber nur bei Bündelung",type:"yes"},
+    {from:"economic",to:"optC",label:"strategisch, aber schwach",type:"escalation"},
+    {from:"economic",to:"optD",label:"Nein / Sonderfall",type:"no"},
+    {from:"optA",to:"gate",label:"A",type:"merge"},
+    {from:"optB",to:"gate",label:"B",type:"merge"},
+    {from:"optC",to:"gate",label:"C",type:"merge"},
+    {from:"optD",to:"gate",label:"D",type:"merge"},
+    {from:"note",to:"gate",label:"Stop-Regel",type:"dashed"},
+    {from:"gate",to:"message",label:"Ja",type:"yes"},
+    {from:"gate",to:"revise",label:"Nein",type:"no"},
+    {from:"revise",to:"assess",label:"zurück zur Bewertung",type:"loop"},
+    {from:"message",to:"followup",label:"senden",type:"normal"},
+    {from:"followup",to:"end",label:"abgeschlossen",type:"normal"}
+  ],
+  footer:"Created by Ing. Manfred Foissner · All rights reserved · Nutzungsrecht für interne Projekt- und Kundenkommunikation"
+};
+
+const el = {
+  mount:document.getElementById("mount"),
+  canvas:document.getElementById("canvas"),
+  status:document.getElementById("viewStatus"),
+  outline:document.getElementById("outline"),
+  json:document.getElementById("jsonInput"),
+  messages:document.getElementById("messages"),
+  selPill:document.getElementById("selPill"),
+  validStatus:document.getElementById("validStatus"),
+  layoutMode:document.getElementById("layoutMode"),
+  themeMode:document.getElementById("themeMode"),
+  modePill:document.getElementById("modePill"),
+  nodeId:document.getElementById("nodeId"),
+  nodeType:document.getElementById("nodeType"),
+  nodeLabel:document.getElementById("nodeLabel"),
+  nodeBody:document.getElementById("nodeBody"),
+  nodeLane:document.getElementById("nodeLane"),
+  nodeOwner:document.getElementById("nodeOwner"),
+  nodeOutput:document.getElementById("nodeOutput"),
+  nodeX:document.getElementById("nodeX"),
+  nodeY:document.getElementById("nodeY"),
+  edgeList:document.getElementById("edgeList"),
+  edgeFrom:document.getElementById("edgeFrom"),
+  edgeTo:document.getElementById("edgeTo"),
+  edgeLabel:document.getElementById("edgeLabel"),
+  edgeType:document.getElementById("edgeType")
+};
+
+for(const [v,l] of SHAPES){
+  const o=document.createElement("option"); o.value=v; o.textContent=l; el.nodeType.appendChild(o);
+}
+
+let data = structuredClone(DEMO);
+let selectedNode = "start";
+let selectedEdge = null;
+let scale = 1;
+let pan = {x:0,y:0};
+let draggingNode = null;
+let panning = null;
+
+function css(name){return getComputedStyle(document.body).getPropertyValue(name).trim();}
+function pal(){return {
+  bg:css("--bg"),paper:css("--paper"),paper2:css("--paper2"),ink:css("--ink"),muted:css("--muted"),soft:css("--soft"),line:css("--line"),
+  anth:css("--anth"),anth2:css("--anth2"),lime:css("--lime"),lime2:css("--lime2"),limeDim:css("--limeDim"),
+  blue:css("--blue"),blueDim:css("--blueDim"),amber:css("--amber"),amberDim:css("--amberDim"),red:css("--red"),redDim:css("--redDim"),violet:css("--violet"),violetDim:css("--violetDim")
+};}
+function esc(s){return String(s??"").replace(/[<>&'"]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;","'":"&apos;",'"':"&quot;"}[c]));}
+function wrap(s,n){const words=String(s??"").split(/\s+/).filter(Boolean);const lines=[];let line="";for(const w of words){if((line+" "+w).trim().length>n){if(line)lines.push(line);line=w}else line=(line+" "+w).trim()} if(line)lines.push(line);return lines;}
+function uid(prefix="n"){let i=1;while(data.nodes.some(n=>n.id===prefix+i))i++;return prefix+i;}
+function rect(x,y,w,h,fill,stroke="",rx=12,cls="",extra=""){return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${fill}"${stroke?` stroke="${stroke}" stroke-width="1"`:""}${cls?` class="${cls}"`:""}${extra}/>`;}
+function text(x,y,s,cls="body",fill="currentColor",anchor="start"){return `<text x="${x}" y="${y}" class="font ${cls}" fill="${fill}" text-anchor="${anchor}">${esc(s)}</text>`;}
+function mtext(x,y,s,max=28,lh=15,cls="body",fill="currentColor",anchor="middle",limit=4){
+  const lines=wrap(s,max).slice(0,limit);
+  const start=y-((lines.length-1)*lh)/2;
+  return `<text x="${x}" y="${start}" class="font ${cls}" fill="${fill}" text-anchor="${anchor}">`+lines.map((l,i)=>`<tspan x="${x}" dy="${i?lh:0}">${esc(l)}</tspan>`).join("")+`</text>`;
+}
+function typeColor(type,p){
+  if(type==="decision")return{accent:p.amber,fill:p.amberDim};
+  if(type==="note")return{accent:p.red,fill:p.redDim};
+  if(type==="start"||type==="end"||type==="merge")return{accent:p.lime2,fill:p.limeDim};
+  if(type==="data"||type==="document"||type==="database")return{accent:p.blue,fill:p.blueDim};
+  if(type==="subprocess")return{accent:p.violet,fill:p.violetDim};
+  return{accent:p.lime2,fill:p.paper};
+}
+function edgeColor(type,p){
+  if(type==="no"||type==="loop")return p.red;
+  if(type==="yes"||type==="merge")return p.lime2;
+  if(type==="parallel")return p.blue;
+  if(type==="escalation")return p.amber;
+  if(type==="dashed")return p.soft;
+  return p.soft;
+}
+function nodeSize(n){
+  const labelLines=wrap(n.label||n.id, n.type==="decision"?20:26).length;
+  const bodyLines=wrap(n.body||"", n.type==="decision"?22:30).slice(0,4).length;
+  let w=240,h=112;
+  if(n.type==="decision"){w=240;h=Math.max(150,95+bodyLines*16+labelLines*15);}
+  else if(n.type==="merge"){w=92;h=92;}
+  else if(n.type==="note"){w=260;h=Math.max(120,70+bodyLines*17);}
+  else {w=250;h=Math.max(118,78+bodyLines*16+labelLines*13);}
+  if(n.type==="start"||n.type==="end"){w=190;h=92;}
+  return {w,h};
+}
+function bounds(){
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  for(const n of data.nodes){const s=nodeSize(n);minX=Math.min(minX,n.x||0);minY=Math.min(minY,n.y||0);maxX=Math.max(maxX,(n.x||0)+s.w);maxY=Math.max(maxY,(n.y||0)+s.h);}
+  if(!data.nodes.length)return{minX:0,minY:0,maxX:1200,maxY:800,w:1200,h:800};
+  return{minX,minY,maxX,maxY,w:maxX-minX,h:maxY-minY};
+}
+function defs(p){return `<style>
+.font{font-family:Inter,Segoe UI,Arial,sans-serif}
+.kicker{font-size:12px;letter-spacing:3px;font-weight:900}
+.h1{font-size:30px;font-weight:950;letter-spacing:-.8px}
+.h2{font-size:17px;font-weight:950}
+.body{font-size:12px;font-weight:650}
+.micro{font-size:9px;font-weight:950;letter-spacing:.7px;text-transform:uppercase}
+.nodeTitle{font-size:14px;font-weight:950}
+.nodeBody{font-size:11.5px;font-weight:650}
+.edgeLabel{font-size:10px;font-weight:950;letter-spacing:.4px}
+.node{cursor:move}
+.node.selected .shape{stroke:${p.lime2}!important;stroke-width:3!important}
+.edgeVisual.selected{stroke:${p.lime2}!important;stroke-width:5!important}
+.shadow{filter:url(#shadow)}
+</style>
+<defs>
+<filter id="shadow" x="-15%" y="-15%" width="130%" height="145%"><feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#000" flood-opacity=".10"/></filter>
+<marker id="arrSoft" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M2,2 L10,6 L2,10 Z" fill="${p.soft}"/></marker>
+<marker id="arrYes" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M2,2 L10,6 L2,10 Z" fill="${p.lime2}"/></marker>
+<marker id="arrNo" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M2,2 L10,6 L2,10 Z" fill="${p.red}"/></marker>
+<marker id="arrBlue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M2,2 L10,6 L2,10 Z" fill="${p.blue}"/></marker>
+<marker id="arrAmber" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M2,2 L10,6 L2,10 Z" fill="${p.amber}"/></marker>
+</defs>`;}
+function marker(type){if(type==="no"||type==="loop")return"arrNo";if(type==="yes"||type==="merge")return"arrYes";if(type==="parallel")return"arrBlue";if(type==="escalation")return"arrAmber";return"arrSoft";}
+function shape(n,p){
+  const {w,h}=nodeSize(n), tc=typeColor(n.type,p);
+  let s="";
+  if(n.type==="start"||n.type==="end")s+=rect(0,0,w,h,tc.fill,tc.accent,999,"shape");
+  else if(n.type==="decision")s+=`<polygon class="shape" points="${w/2},0 ${w},${h/2} ${w/2},${h} 0,${h/2}" fill="${tc.fill}" stroke="${tc.accent}" stroke-width="1"/>`;
+  else if(n.type==="data")s+=`<polygon class="shape" points="28,0 ${w},0 ${w-28},${h} 0,${h}" fill="${tc.fill}" stroke="${tc.accent}" stroke-width="1"/>`;
+  else if(n.type==="document")s+=`<path class="shape" d="M0 0 H${w} V${h-18} Q${w*.75} ${h+10} ${w*.5} ${h-10} Q${w*.25} ${h-30} 0 ${h-12} Z" fill="${tc.fill}" stroke="${tc.accent}" stroke-width="1"/>`;
+  else if(n.type==="database"){s+=`<path class="shape" d="M0 18 C0 -6 ${w} -6 ${w} 18 V${h-18} C${w} ${h+6} 0 ${h+6} 0 ${h-18} Z" fill="${tc.fill}" stroke="${tc.accent}" stroke-width="1"/>`;s+=`<ellipse cx="${w/2}" cy="18" rx="${w/2}" ry="18" fill="none" stroke="${tc.accent}" stroke-width="1"/>`;}
+  else if(n.type==="subprocess"){s+=rect(0,0,w,h,tc.fill,tc.accent,12,"shape");s+=`<line x1="18" y1="0" x2="18" y2="${h}" stroke="${tc.accent}"/><line x1="${w-18}" y1="0" x2="${w-18}" y2="${h}" stroke="${tc.accent}"/>`;}
+  else if(n.type==="merge")s+=`<circle class="shape" cx="${w/2}" cy="${h/2}" r="${Math.min(w,h)/2-4}" fill="${tc.fill}" stroke="${tc.accent}" stroke-width="1"/>`;
+  else if(n.type==="note")s+=rect(0,0,w,h,tc.fill,tc.accent,12,"shape",` stroke-dasharray="7 6"`);
+  else s+=rect(0,0,w,h,tc.fill,tc.accent,12,"shape");
+  const cx=w/2;
+  if(n.type==="merge"){s+=mtext(cx,h/2,n.label||"Merge",10,14,"nodeTitle",p.ink,"middle",2);}
+  else{
+    s+=mtext(cx,n.type==="decision"?h*.37:34,n.label||n.id,n.type==="decision"?19:26,15,"nodeTitle",p.ink,"middle",3);
+    s+=mtext(cx,n.type==="decision"?h*.63:h*.58,n.body||"",n.type==="decision"?22:31,15,"nodeBody",p.muted,"middle",4);
+    if(n.owner||n.output)s+=text(14,h-12,`${n.owner||""}${n.owner&&n.output?" · ":""}${n.output||""}`,"micro",p.soft);
+  }
+  return s;
+}
+function nodeSvg(n,p){return `<g class="node ${selectedNode===n.id?"selected":""}" data-node="${esc(n.id)}" transform="translate(${n.x||0},${n.y||0})">${shape(n,p)}</g>`;}
+function anchor(n,side){
+  const s=nodeSize(n),x=n.x||0,y=n.y||0;
+  return {l:[x,y+s.h/2],r:[x+s.w,y+s.h/2],t:[x+s.w/2,y],b:[x+s.w/2,y+s.h],c:[x+s.w/2,y+s.h/2]}[side];
+}
+function routeEdge(e,i,p){
+  const a=data.nodes.find(n=>n.id===e.from), b=data.nodes.find(n=>n.id===e.to); if(!a||!b)return"";
+  const color=edgeColor(e.type,p), mark=marker(e.type);
+  let start,end,d;
+  const ac=anchor(a,"c"),bc=anchor(b,"c");
+  const dx=bc[0]-ac[0],dy=bc[1]-ac[1];
+  if(e.type==="loop" || dx < -40){
+    start=anchor(a,"b");end=anchor(b,"t");
+    const drop=Math.max(start[1]+60,end[1]-60);
+    d=`M${start[0]} ${start[1]} L${start[0]} ${drop} L${end[0]} ${drop} L${end[0]} ${end[1]}`;
+  }else if(Math.abs(dx)>=Math.abs(dy)){
+    start=anchor(a,dx>=0?"r":"l");end=anchor(b,dx>=0?"l":"r");
+    const mx=(start[0]+end[0])/2;
+    d=`M${start[0]} ${start[1]} L${mx} ${start[1]} L${mx} ${end[1]} L${end[0]} ${end[1]}`;
+  }else{
+    start=anchor(a,dy>=0?"b":"t");end=anchor(b,dy>=0?"t":"b");
+    const my=(start[1]+end[1])/2;
+    d=`M${start[0]} ${start[1]} L${start[0]} ${my} L${end[0]} ${my} L${end[0]} ${end[1]}`;
+  }
+  const dash=(e.type==="dashed"||e.dashed)?' stroke-dasharray="8 7"':"";
+  let s=`<path class="edgeHit" data-edge="${i}" d="${d}"/>`;
+  s+=`<path class="edgeVisual ${selectedEdge===i?"selected":""}" data-edge="${i}" d="${d}" fill="none" stroke="${color}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#${mark})"${dash}/>`;
+  if(e.label){
+    const lx=(ac[0]+bc[0])/2, ly=(ac[1]+bc[1])/2;
+    const tw=Math.min(190,Math.max(54,e.label.length*7+20));
+    s+=rect(lx-tw/2,ly-15,tw,24,p.paper,p.line,999);
+    s+=text(lx,ly+2,e.label,"edgeLabel",color,"middle");
+  }
+  return s;
+}
+function laneLayer(p){
+  if(el.layoutMode.value!=="swimlane")return"";
+  const lanes=data.lanes||[...new Set(data.nodes.map(n=>n.lane).filter(Boolean))];
+  const b=bounds();let s="";const x=b.minX-70,w=b.w+140,h=190;
+  lanes.forEach((lane,i)=>{
+    const y=170+i*h;
+    s+=rect(x,y,w,h-16,i%2?p.paper:p.paper2,p.line,18,"");
+    s+=rect(x,y,210,h-16,p.paper2,p.line,18,"");
+    s+=text(x+22,y+38,"SWIMLANE","micro",p.soft);
+    s+=text(x+22,y+70,lane,"h2",p.ink);
+  });
+  return s;
+}
+function renderSvg(exportMode=false){
+  const p=pal(), b=bounds();
+  let w,h,tr;
+  if(exportMode){
+    const pad=120,header=112;
+    w=Math.max(1300,b.w+pad*2);h=Math.max(820,b.h+pad*2+header);
+    tr=`translate(${pad-b.minX},${header+30-b.minY})`;
+  }else{
+    const r=el.canvas.getBoundingClientRect();
+    w=Math.max(900,Math.round(r.width||1200));h=Math.max(620,Math.round(r.height||800));
+    tr=`translate(${pan.x},${pan.y}) scale(${scale})`;
+  }
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" class="flowSvg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(data.title)}">`;
+  s+=defs(p);
+  s+=rect(0,0,w,h,p.bg,"",0);
+  s+=rect(0,0,w,98,p.anth,"",0);
+  s+=rect(0,0,w,5,p.lime,"",0);
+  s+=text(38,34,"SMART PROCESS MAP · STANDALONE SVG","kicker","#cbd5da");
+  s+=text(38,72,data.title||"Process Flow","h1",p.lime);
+  s+=`<g id="view" transform="${tr}">`;
+  s+=laneLayer(p);
+  s+=`<g id="edges">${data.edges.map((e,i)=>routeEdge(e,i,p)).join("")}</g>`;
+  s+=`<g id="nodes">${data.nodes.map(n=>nodeSvg(n,p)).join("")}</g>`;
+  s+=`</g>`;
+  s+=text(w-34,h-20,data.footer||"Created by Ing. Manfred Foissner · All rights reserved","body",p.soft,"end");
+  s+=`</svg>`;
+  return s;
+}
+function render(){
+  validate();
+  el.mount.innerHTML=renderSvg(false);
+  renderOutline();
+  renderInspector();
+  renderEdges();
+  syncJson();
+  updateStatus();
+  el.modePill.textContent=el.layoutMode.options[el.layoutMode.selectedIndex].textContent;
+}
+function fit(){
+  const b=bounds(), r=el.canvas.getBoundingClientRect();
+  const top=124,pad=50;
+  const aw=Math.max(320,r.width-pad*2), ah=Math.max(260,r.height-top-pad);
+  scale=Math.max(.32,Math.min(1.15,Math.min(aw/b.w,ah/b.h)));
+  pan.x=Math.round((r.width-b.w*scale)/2-b.minX*scale);
+  pan.y=Math.round(top+(ah-b.h*scale)/2-b.minY*scale);
+  el.mount.innerHTML=renderSvg(false);
+  updateStatus();
+}
+function updateStatus(){el.status.textContent=`Zoom ${Math.round(scale*100)}% · Pan ${Math.round(pan.x)}, ${Math.round(pan.y)}`;}
+function syncJson(){el.json.value=JSON.stringify(data,null,2);}
+function applyJson(){try{data=JSON.parse(el.json.value);data.nodes||=[];data.edges||=[];data.lanes||=[];selectedNode=data.nodes[0]?.id||null;selectedEdge=null;render();fit();}catch(e){message([["error",e.message]]);}}
+function colorDot(type){const p=pal(),c=typeColor(type,p);return c.fill+"|"+c.accent;}
+function renderOutline(){
+  el.outline.innerHTML=data.nodes.map(n=>{
+    const [fill,stroke]=colorDot(n.type).split("|");
+    return `<div class="outlineItem ${selectedNode===n.id?"active":""}" data-outline="${esc(n.id)}"><span class="typeDot" style="background:${fill};border-color:${stroke}"></span><span><strong>${esc(n.label||n.id)}</strong><small>${esc(n.type)} · ${esc(n.lane||"no lane")}</small></span></div>`;
+  }).join("");
+}
+function renderInspector(){
+  const n=data.nodes.find(n=>n.id===selectedNode);
+  el.selPill.textContent=n?`Node · ${n.id}`:selectedEdge!=null?`Edge · ${selectedEdge+1}`:"No selection";
+  if(n){
+    el.nodeId.value=n.id||"";el.nodeType.value=n.type||"task";el.nodeLabel.value=n.label||"";el.nodeBody.value=n.body||"";el.nodeLane.value=n.lane||"";el.nodeOwner.value=n.owner||"";el.nodeOutput.value=n.output||"";el.nodeX.value=Math.round(n.x||0);el.nodeY.value=Math.round(n.y||0);
+  }
+  const e=selectedEdge!=null?data.edges[selectedEdge]:null;
+  el.edgeFrom.value=e?.from||"";el.edgeTo.value=e?.to||"";el.edgeLabel.value=e?.label||"";el.edgeType.value=e?.type||"normal";
+}
+function renderEdges(){
+  el.edgeList.innerHTML=data.edges.map((e,i)=>`<div class="edgeItem ${selectedEdge===i?"active":""}" data-edge-row="${i}"><span>${esc(e.from)} → ${esc(e.to)}</span><strong>${esc(e.label||e.type||"")}</strong></div>`).join("");
+}
+function message(msgs){el.messages.innerHTML=msgs.map(([t,m])=>`<div class="msg ${t}">${esc(m)}</div>`).join("");}
+function validate(){
+  const msgs=[], ids=new Set(), dup=new Set();
+  for(const n of data.nodes){if(ids.has(n.id))dup.add(n.id);ids.add(n.id); if(!n.label)msgs.push(["warn",`Node ${n.id} has no label.`]);}
+  for(const id of dup)msgs.push(["error",`Duplicate node ID: ${id}`]);
+  const out={},inc={}; for(const n of data.nodes){out[n.id]=0;inc[n.id]=0;}
+  for(const [i,e] of data.edges.entries()){
+    if(!ids.has(e.from))msgs.push(["error",`Broken edge ${i+1}: from ${e.from}`]);
+    if(!ids.has(e.to))msgs.push(["error",`Broken edge ${i+1}: to ${e.to}`]);
+    if(ids.has(e.from))out[e.from]++; if(ids.has(e.to))inc[e.to]++;
+  }
+  for(const n of data.nodes){
+    if(n.type==="decision"){
+      const labels=data.edges.filter(e=>e.from===n.id).map(e=>(e.label||e.type||"").toLowerCase());
+      if(out[n.id]<2)msgs.push(["warn",`Decision ${n.id} needs at least two outgoing paths.`]);
+      if(!labels.some(l=>l.includes("ja")||l.includes("yes")))msgs.push(["warn",`Decision ${n.id} has no visible yes path.`]);
+      if(!labels.some(l=>l.includes("nein")||l.includes("no")))msgs.push(["warn",`Decision ${n.id} has no visible no path.`]);
+    }
+    if(inc[n.id]===0 && n.type!=="start")msgs.push(["warn",`No incoming path: ${n.id}`]);
+    if(out[n.id]===0 && n.type!=="end" && n.type!=="note")msgs.push(["warn",`No outgoing path: ${n.id}`]);
+  }
+  if(!msgs.length)msgs.push(["ok","Validation passed. Main branches and connectors are covered."]);
+  message(msgs);
+  el.validStatus.textContent=msgs.some(m=>m[0]==="error")?"Errors":msgs.some(m=>m[0]==="warn")?"Warnings":"OK";
+}
+function saveNode(){
+  const n=data.nodes.find(n=>n.id===selectedNode); if(!n)return;
+  const newId=el.nodeId.value.trim();
+  if(newId && newId!==n.id){
+    if(data.nodes.some(x=>x.id===newId)){message([["error","Duplicate node ID."]]);return;}
+    data.edges.forEach(e=>{if(e.from===n.id)e.from=newId;if(e.to===n.id)e.to=newId;});
+    n.id=newId;selectedNode=newId;
+  }
+  Object.assign(n,{type:el.nodeType.value,label:el.nodeLabel.value,body:el.nodeBody.value,lane:el.nodeLane.value,owner:el.nodeOwner.value,output:el.nodeOutput.value,x:Number(el.nodeX.value)||0,y:Number(el.nodeY.value)||0});
+  data.lanes ||= [];
+  if(n.lane && !data.lanes.includes(n.lane))data.lanes.push(n.lane);
+  render();
+}
+function saveEdge(){
+  if(selectedEdge==null)return;
+  const e=data.edges[selectedEdge];
+  Object.assign(e,{from:el.edgeFrom.value.trim(),to:el.edgeTo.value.trim(),label:el.edgeLabel.value.trim(),type:el.edgeType.value});
+  render();
+}
+function selectedOrFirst(){return data.nodes.find(n=>n.id===selectedNode)||data.nodes[0];}
+function addNodeAfter(type,label,body){
+  const a=selectedOrFirst();const id=uid(type[0]||"n");
+  const s=nodeSize(a);
+  data.lanes ||= [];
+  const n={id,type,label,body,lane:a?.lane||data.lanes[0]||"",owner:"",output:"",x:(a?.x||80)+s.w+170,y:a?.y||220};
+  data.nodes.push(n);
+  if(a)data.edges.push({from:a.id,to:id,label:"next",type:"normal"});
+  selectedNode=id;selectedEdge=null;render();fit();
+}
+function addDecisionWithOutcomes(){
+  const a=selectedOrFirst();const id=uid("d"), yes=uid("yes"), no=uid("no");
+  const ax=a?.x||100, ay=a?.y||220;
+  const d={id,type:"decision",label:"Decision?",body:"Welche Bedingung muss erfüllt sein?",lane:a?.lane||"",owner:"",output:"",x:ax+360,y:ay};
+  const yN={id:yes,type:"task",label:"Yes path",body:"Positive Folgeaktion definieren.",lane:a?.lane||"",owner:"",output:"",x:ax+680,y:ay-120};
+  const nN={id:no,type:"task",label:"No path",body:"Alternative, Eskalation oder Nacharbeit definieren.",lane:a?.lane||"",owner:"",output:"",x:ax+680,y:ay+120};
+  data.nodes.push(d,yN,nN);
+  if(a)data.edges.push({from:a.id,to:id,label:"prüfen",type:"normal"});
+  data.edges.push({from:id,to:yes,label:"Ja",type:"yes"},{from:id,to:no,label:"Nein",type:"no"});
+  selectedNode=id;selectedEdge=null;render();fit();
+}
+function addParallel(){
+  const a=selectedOrFirst();const ax=a?.x||100,ay=a?.y||220;
+  const split=uid("split"), p1=uid("p"), p2=uid("p"), merge=uid("merge");
+  data.nodes.push(
+    {id:split,type:"merge",label:"Split",body:"Parallelzweige starten.",lane:a?.lane||"",x:ax+320,y:ay+10},
+    {id:p1,type:"task",label:"Parallel path A",body:"Ersten Prüfpfad definieren.",lane:a?.lane||"",x:ax+530,y:ay-125},
+    {id:p2,type:"task",label:"Parallel path B",body:"Zweiten Prüfpfad definieren.",lane:a?.lane||"",x:ax+530,y:ay+125},
+    {id:merge,type:"merge",label:"Merge",body:"Zweige zusammenführen.",lane:a?.lane||"",x:ax+850,y:ay+10}
+  );
+  if(a)data.edges.push({from:a.id,to:split,label:"split",type:"normal"});
+  data.edges.push({from:split,to:p1,label:"A",type:"parallel"},{from:split,to:p2,label:"B",type:"parallel"},{from:p1,to:merge,label:"done",type:"merge"},{from:p2,to:merge,label:"done",type:"merge"});
+  selectedNode=split;selectedEdge=null;render();fit();
+}
+function addMerge(){addNodeAfter("merge","Merge","Zweige zusammenführen.");}
+function addNote(){addNodeAfter("note","Annotation","Hinweis, Risiko oder No-Go-Regel ergänzen.");}
+function addEnd(){addNodeAfter("end","Ende","Branch abgeschlossen.");}
+function addEdge(){
+  const a=selectedOrFirst(); const b=data.nodes.find(n=>n.id!==a?.id);
+  data.edges.push({from:a?.id||"",to:b?.id||"",label:"",type:"normal"}); selectedEdge=data.edges.length-1; selectedNode=null; render();
+}
+function deleteNode(){
+  if(!selectedNode)return;
+  data.nodes=data.nodes.filter(n=>n.id!==selectedNode);
+  data.edges=data.edges.filter(e=>e.from!==selectedNode&&e.to!==selectedNode);
+  selectedNode=data.nodes[0]?.id||null; selectedEdge=null; render();fit();
+}
+function deleteEdge(){if(selectedEdge==null)return;data.edges.splice(selectedEdge,1);selectedEdge=null;render();}
+function autoLayout(){
+  // Clean demo-grade map: preserve branches, avoid pure hose.
+  const layers=[], ids=new Set(data.nodes.map(n=>n.id)), indeg={}, out={};
+  data.nodes.forEach(n=>{indeg[n.id]=0;out[n.id]=[];});
+  data.edges.forEach(e=>{if(ids.has(e.from)&&ids.has(e.to)&&e.type!=="loop"){indeg[e.to]++;out[e.from].push(e.to);}});
+  let q=data.nodes.filter(n=>indeg[n.id]===0).map(n=>n.id); if(!q.length&&data.nodes[0])q=[data.nodes[0].id];
+  const level={}; q.forEach(id=>level[id]=0);
+  while(q.length){const id=q.shift(); for(const to of out[id]){level[to]=Math.max(level[to]??0,(level[id]??0)+1);indeg[to]--;if(indeg[to]<=0)q.push(to);}}
+  data.nodes.forEach(n=>{if(level[n.id]==null)level[n.id]=Math.max(0,...Object.values(level))+1;});
+  const groups={}; data.nodes.forEach(n=>{groups[level[n.id]]??=[];groups[level[n.id]].push(n);});
+  Object.keys(groups).map(Number).sort((a,b)=>a-b).forEach(l=>{
+    const group=groups[l]; const x=100+l*320; const total=(group.length-1)*185;
+    group.forEach((n,i)=>{n.x=x;n.y=230+i*185-total/2;});
+  });
+  render();fit();
+}
+function svgPoint(cx,cy){
+  const svg=el.mount.querySelector("svg"),r=svg.getBoundingClientRect(),vb=svg.viewBox.baseVal;
+  const x=(cx-r.left)*(vb.width/r.width)+vb.x; const y=(cy-r.top)*(vb.height/r.height)+vb.y;
+  return{x:(x-pan.x)/scale,y:(y-pan.y)/scale};
+}
+function updateView(){
+  const svg=el.mount.querySelector("svg #view");
+  if(svg)svg.setAttribute("transform",`translate(${pan.x},${pan.y}) scale(${scale})`);
+  updateStatus();
+}
+function download(name,content,type){const b=new Blob([content],{type});const u=URL.createObjectURL(b);const a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);}
+function exportSvg(){download("process-flow-builder-v3-export.svg",'<?xml version="1.0" encoding="UTF-8"?>\n'+renderSvg(true),"image/svg+xml");}
+function exportJson(){download("process-flow-builder-v3-data.json",JSON.stringify(data,null,2),"application/json");}
+async function copyJson(){await navigator.clipboard.writeText(JSON.stringify(data,null,2));}
+function exportPng(){
+  const svg=renderSvg(true);const blob=new Blob([svg],{type:"image/svg+xml;charset=utf-8"});const url=URL.createObjectURL(blob);const img=new Image();
+  img.onload=()=>{const c=document.createElement("canvas");c.width=img.width*2;c.height=img.height*2;const ctx=c.getContext("2d");ctx.fillStyle=pal().bg;ctx.fillRect(0,0,c.width,c.height);ctx.scale(2,2);ctx.drawImage(img,0,0);URL.revokeObjectURL(url);c.toBlob(p=>download("process-flow-builder-v3-export.png",p,"image/png"));};
+  img.src=url;
+}
+el.canvas.addEventListener("pointerdown",ev=>{
+  const node=ev.target.closest(".node"),edge=ev.target.closest(".edgeHit,.edgeVisual");
+  if(node){selectedNode=node.dataset.node;selectedEdge=null;const n=data.nodes.find(x=>x.id===selectedNode);const pt=svgPoint(ev.clientX,ev.clientY);draggingNode={id:n.id,dx:pt.x-(n.x||0),dy:pt.y-(n.y||0)};el.canvas.setPointerCapture(ev.pointerId);render();return;}
+  if(edge){selectedEdge=Number(edge.dataset.edge);selectedNode=null;render();return;}
+  panning={x:ev.clientX,y:ev.clientY,px:pan.x,py:pan.y};el.canvas.classList.add("dragging");el.canvas.setPointerCapture(ev.pointerId);
+});
+el.canvas.addEventListener("pointermove",ev=>{
+  if(draggingNode){const n=data.nodes.find(x=>x.id===draggingNode.id);const pt=svgPoint(ev.clientX,ev.clientY);n.x=Math.round(pt.x-draggingNode.dx);n.y=Math.round(pt.y-draggingNode.dy);syncJson();el.mount.innerHTML=renderSvg(false);renderInspector();updateStatus();return;}
+  if(panning){pan.x=panning.px+(ev.clientX-panning.x);pan.y=panning.py+(ev.clientY-panning.y);updateView();}
+});
+el.canvas.addEventListener("pointerup",()=>{draggingNode=null;panning=null;el.canvas.classList.remove("dragging");render();});
+el.canvas.addEventListener("wheel",ev=>{ev.preventDefault();const old=scale;const d=ev.deltaY<0?1.08:.92;scale=Math.max(.2,Math.min(2.8,scale*d));const r=el.canvas.getBoundingClientRect();const mx=ev.clientX-r.left,my=ev.clientY-r.top;pan.x=mx-(mx-pan.x)*(scale/old);pan.y=my-(my-pan.y)*(scale/old);updateView();},{passive:false});
+el.outline.addEventListener("click",ev=>{const it=ev.target.closest(".outlineItem");if(it){selectedNode=it.dataset.outline;selectedEdge=null;render();}});
+el.edgeList.addEventListener("click",ev=>{const it=ev.target.closest(".edgeItem");if(it){selectedEdge=Number(it.dataset.edgeRow);selectedNode=null;render();}});
+document.getElementById("saveNode").onclick=saveNode;
+document.getElementById("deleteNode").onclick=deleteNode;
+document.getElementById("saveEdge").onclick=saveEdge;
+document.getElementById("addEdge").onclick=addEdge;
+document.getElementById("deleteEdge").onclick=deleteEdge;
+document.getElementById("addTask").onclick=()=>addNodeAfter("task","New task","Konkreten Arbeitsschritt beschreiben.");
+document.getElementById("addDecision").onclick=addDecisionWithOutcomes;
+document.getElementById("addParallel").onclick=addParallel;
+document.getElementById("addMerge").onclick=addMerge;
+document.getElementById("addNote").onclick=addNote;
+document.getElementById("addEnd").onclick=addEnd;
+document.getElementById("layoutBtn").onclick=autoLayout;
+document.getElementById("fitBtn").onclick=fit;
+document.getElementById("zoomIn").onclick=()=>{scale=Math.min(2.8,scale*1.15);updateView();};
+document.getElementById("zoomOut").onclick=()=>{scale=Math.max(.2,scale*.85);updateView();};
+document.getElementById("resetView").onclick=()=>{scale=1;pan={x:0,y:0};render();fit();};
+document.getElementById("darkBtn").onclick=()=>{document.body.dataset.mode=document.body.dataset.mode==="dark"?"light":"dark";render();};
+document.getElementById("themeMode").onchange=()=>{document.body.dataset.theme=el.themeMode.value;render();};
+document.getElementById("layoutMode").onchange=()=>{render();fit();};
+document.getElementById("demoBtn").onclick=()=>{data=structuredClone(DEMO);selectedNode="start";selectedEdge=null;render();fit();};
+document.getElementById("svgBtn").onclick=exportSvg;
+document.getElementById("pngBtn").onclick=exportPng;
+document.getElementById("jsonBtn").onclick=exportJson;
+document.getElementById("printBtn").onclick=()=>window.print();
+document.getElementById("applyJson").onclick=applyJson;
+document.getElementById("copyJson").onclick=copyJson;
+window.addEventListener("resize",()=>setTimeout(fit,80));
+
+render();
+setTimeout(fit,100);
+</script>
+</body>
+</html>

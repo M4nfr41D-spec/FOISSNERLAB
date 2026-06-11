@@ -1,0 +1,69 @@
+{
+  "project": "FOISSNERLAB",
+  "generated": "2026-06-11",
+  "created_by": "Ing. Manfred Foissner",
+  "sections": {
+    "standalone_tools": [
+      {
+        "title": "Lime Defender",
+        "path": "tools/lime-defender.html",
+        "type": "Game Lab",
+        "status": "Playable demo",
+        "description": "Mini-Shooter im FOISSNER LAB Look mit Score, Wellenlogik, Desktop- und Mobile-Steuerung."
+      },
+      {
+        "title": "HTML Text Editor",
+        "path": "tools/html-text-editor.html",
+        "type": "Editor Tool",
+        "status": "Standalone",
+        "description": "Visueller HTML-/Style-Editor mit Preview- und Export-Workflow."
+      },
+      {
+        "title": "Process Flow Builder v3.1",
+        "path": "tools/process-flow-builder-v3-1.html",
+        "type": "Flowchart Tool",
+        "status": "Standalone engine",
+        "description": "Process-Map-Builder ohne Mermaid-Runtime mit Decisions, Branches, Export und JSON-Struktur."
+      },
+      {
+        "title": "FOISSNER ACID-303 Patch 11",
+        "path": "tools/acid-303-patch11.html",
+        "type": "Audio Lab",
+        "status": "Playable instrument",
+        "description": "Browserbasierter Acid-/Drum-Sequencer mit Tone-, Performance- und Step-Matrix."
+      }
+    ],
+    "elementor_snippets": [
+      {
+        "title": "Stat Counter",
+        "path": "elementor-snippets/stat-counter.html",
+        "description": "Animierter Zahlenzähler."
+      },
+      {
+        "title": "Section Head",
+        "path": "elementor-snippets/section-head.html",
+        "description": "Eyebrow, Headline und Leadtext."
+      },
+      {
+        "title": "Glass Card",
+        "path": "elementor-snippets/glass-card.html",
+        "description": "Frosted-Glass Card mit Lime-Kante."
+      },
+      {
+        "title": "Button Set",
+        "path": "elementor-snippets/button-set.html",
+        "description": "Primary- und Ghost-Button."
+      },
+      {
+        "title": "CTA Buttons – 3 Styles",
+        "path": "elementor-snippets/cta-buttons-3-styles.html",
+        "description": "Primary, Secondary und Outline CTA-Varianten."
+      },
+      {
+        "title": "Neu Control",
+        "path": "elementor-snippets/neu-control.html",
+        "description": "Slider + Toggle Control im dunklen UI-Stil."
+      }
+    ]
+  }
+}

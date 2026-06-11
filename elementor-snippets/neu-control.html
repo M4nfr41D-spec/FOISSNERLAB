@@ -1,0 +1,17 @@
+<style>
+.fl-ctrl{font-family:'Sora',system-ui,sans-serif;max-width:300px;padding:26px;border-radius:18px;background:#0e130f;box-shadow:8px 8px 18px #05080600,-8px -8px 18px rgba(255,255,255,.02),inset 0 0 0 1px rgba(255,255,255,.04);color:#e8ede6}
+.fl-ctrl label{font-family:'Chakra Petch',sans-serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#8b968a;display:block;margin-bottom:12px}
+.fl-ctrl .val{color:#bfe53a;float:right}
+.fl-ctrl input[type=range]{-webkit-appearance:none;width:100%;height:8px;border-radius:8px;background:#080b09;box-shadow:inset 3px 3px 6px #000,inset -2px -2px 5px rgba(255,255,255,.03);outline:none}
+.fl-ctrl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#bfe53a;box-shadow:0 0 10px rgba(191,229,58,.6);cursor:pointer}
+.fl-ctrl input[type=range]::-moz-range-thumb{width:20px;height:20px;border:none;border-radius:50%;background:#bfe53a;box-shadow:0 0 10px rgba(191,229,58,.6);cursor:pointer}
+.fl-ctrl .tg{margin-top:24px;display:flex;align-items:center;justify-content:space-between}
+.fl-ctrl .sw{width:52px;height:28px;border-radius:20px;background:#080b09;box-shadow:inset 3px 3px 6px #000;position:relative;cursor:pointer;transition:.3s}
+.fl-ctrl .sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#3a443c;transition:.3s}
+.fl-ctrl .sw.on{background:rgba(191,229,58,.18)}.fl-ctrl .sw.on::after{left:27px;background:#bfe53a;box-shadow:0 0 10px rgba(191,229,58,.7)}
+</style>
+<div class="fl-ctrl"><label>Intensität <span class="val">50%</span></label><input type="range" min="0" max="100" value="50">
+<div class="tg"><label style="margin:0">Aktiv</label><div class="sw on"></div></div></div>
+<script>(function(){document.querySelectorAll('.fl-ctrl:not([data-i])').forEach(function(c){c.setAttribute('data-i','1');
+var r=c.querySelector('input[type=range]'),v=c.querySelector('.val'),s=c.querySelector('.sw');
+r.addEventListener('input',function(){v.textContent=r.value+'%';});s.addEventListener('click',function(){s.classList.toggle('on');});});})();</script>

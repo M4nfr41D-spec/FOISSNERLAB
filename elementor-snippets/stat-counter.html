@@ -1,0 +1,8 @@
+<style>
+.fl-stat{font-family:'Chakra Petch',sans-serif;text-align:center;color:#e8ede6}
+.fl-stat .n{font-size:56px;font-weight:700;color:#bfe53a;line-height:1;text-shadow:0 0 22px rgba(191,229,58,.3)}
+.fl-stat .l{font-family:'Sora',system-ui,sans-serif;color:#8b968a;font-size:14px;margin-top:8px;letter-spacing:.04em}
+</style>
+<div class="fl-stat"><div class="n" data-to="28" data-suffix="+">0</div><div class="l">Jahre Erfahrung</div></div>
+<script>(function(){function run(el){var to=+el.dataset.to,suf=el.dataset.suffix||'',t0=null,d=1500;function f(t){if(!t0)t0=t;var p=Math.min((t-t0)/d,1);el.textContent=Math.round((0.5-Math.cos(p*Math.PI)/2)*to)+suf;if(p<1)requestAnimationFrame(f);}requestAnimationFrame(f);}
+document.querySelectorAll('.fl-stat .n:not([data-done])').forEach(function(el){el.setAttribute('data-done','1');run(el);});})();</script>

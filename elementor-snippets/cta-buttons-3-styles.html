@@ -1,0 +1,341 @@
+<!-- 
+============================================================
+ELEMENTOR CTA BUTTONS - 3 Premium Styles
+============================================================
+VERWENDUNG:
+1. Elementor > HTML Widget
+2. Code einfügen
+3. Style wählen: primary, secondary, outline
+
+FEATURES:
+✅ 3 verschiedene Button-Styles
+✅ Icons einbaubar
+✅ Hover-Animationen
+✅ Vollständig anpassbar
+✅ Responsive
+============================================================
+-->
+
+<div class="cta-buttons-widget">
+    
+    <!-- BUTTON STYLE 1: PRIMARY (Gradient Fill) -->
+    <a href="#" class="cta-button cta-primary">
+        <i class="fas fa-download"></i>
+        <span>PDF herunterladen</span>
+    </a>
+    
+    <!-- BUTTON STYLE 2: SECONDARY (Frosted Glass) -->
+    <a href="#" class="cta-button cta-secondary">
+        <i class="fas fa-user"></i>
+        <span>Kennenlernen</span>
+    </a>
+    
+    <!-- BUTTON STYLE 3: OUTLINE (Border Only) -->
+    <a href="#" class="cta-button cta-outline">
+        <i class="fas fa-envelope"></i>
+        <span>Kontakt</span>
+    </a>
+
+</div>
+
+<style>
+/* ========== CSS VARIABLES (HIER ANPASSEN!) ========== */
+.cta-buttons-widget {
+    /* Farben */
+    --primary-color: #02235b;
+    --primary-light: #3580e1;
+    --primary-lighter: #60a5fa;
+    --white: #ffffff;
+    --text-light: #e5e7eb;
+    
+    /* Button Größen */
+    --button-padding: 16px 36px;
+    --button-font-size: 16px;
+    --button-border-radius: 12px;
+    --icon-gap: 10px;
+    
+    /* Animationen */
+    --transition-speed: 0.3s;
+    --hover-lift: -3px;
+}
+
+/* ========== CONTAINER ========== */
+.cta-buttons-widget {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* ========== BASE BUTTON STYLES ========== */
+.cta-button {
+    padding: var(--button-padding);
+    font-size: var(--button-font-size);
+    font-weight: 700;
+    border-radius: var(--button-border-radius);
+    text-decoration: none;
+    transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Afacad', -apple-system, sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--icon-gap);
+    cursor: pointer;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-button i {
+    font-size: 16px;
+    transition: transform var(--transition-speed);
+}
+
+.cta-button:hover i {
+    transform: scale(1.1);
+}
+
+/* ========== STYLE 1: PRIMARY BUTTON (Gradient) ========== */
+.cta-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    color: var(--white);
+    box-shadow: 0 8px 24px rgba(2, 35, 91, 0.4);
+}
+
+/* Gradient Flip Effect */
+.cta-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+    opacity: 0;
+    transition: opacity var(--transition-speed);
+    border-radius: var(--button-border-radius);
+    z-index: -1;
+}
+
+.cta-primary:hover {
+    transform: translateY(var(--hover-lift));
+    box-shadow: 0 12px 32px rgba(2, 35, 91, 0.6);
+}
+
+.cta-primary:hover::after {
+    opacity: 1;
+}
+
+.cta-primary span {
+    position: relative;
+    z-index: 1;
+}
+
+/* ========== STYLE 2: SECONDARY BUTTON (Frosted Glass) ========== */
+.cta-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: var(--text-light);
+    border: 2px solid rgba(53, 128, 225, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.cta-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(53, 128, 225, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(53, 128, 225, 0.3);
+}
+
+/* Sweep Effect */
+.cta-secondary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(53, 128, 225, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.cta-secondary:hover::before {
+    left: 100%;
+}
+
+/* ========== STYLE 3: OUTLINE BUTTON (Border Only) ========== */
+.cta-outline {
+    background: transparent;
+    color: var(--primary-light);
+    border: 2px solid var(--primary-light);
+    box-shadow: 0 0 0 rgba(2, 35, 91, 0);
+}
+
+.cta-outline:hover {
+    background: rgba(53, 128, 225, 0.1);
+    border-color: var(--primary-lighter);
+    color: var(--primary-lighter);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(2, 35, 91, 0.3);
+}
+
+/* Glow Effect */
+.cta-outline::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: var(--button-border-radius);
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    opacity: 0;
+    z-index: -1;
+    transition: opacity var(--transition-speed);
+    filter: blur(8px);
+}
+
+.cta-outline:hover::after {
+    opacity: 0.3;
+}
+
+/* ========== LOADING STATE (Optional) ========== */
+.cta-button.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.cta-button.loading i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ========== DISABLED STATE ========== */
+.cta-button:disabled,
+.cta-button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .cta-buttons-widget {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .cta-button {
+        width: 100%;
+        justify-content: center;
+        --button-padding: 14px 28px;
+        --button-font-size: 15px;
+    }
+}
+
+/* ========== DARK MODE SUPPORT ========== */
+@media (prefers-color-scheme: dark) {
+    .cta-buttons-widget {
+        --text-light: #e5e7eb;
+    }
+}
+
+/* ========== SIZE VARIANTS (Zusätzlich) ========== */
+.cta-button.small {
+    --button-padding: 10px 20px;
+    --button-font-size: 14px;
+}
+
+.cta-button.large {
+    --button-padding: 20px 48px;
+    --button-font-size: 18px;
+}
+
+/* ========== FULL WIDTH VARIANT ========== */
+.cta-button.full-width {
+    width: 100%;
+    justify-content: center;
+}
+</style>
+
+<!-- 
+============================================================
+ANPASSUNGS-ANLEITUNG:
+============================================================
+
+1. BUTTON TEXT ÄNDERN:
+   <span>DEIN TEXT HIER</span>
+
+2. ICON ÄNDERN:
+   <i class="fas fa-ICONNAME"></i>
+   Beispiele:
+   - fa-download (Download)
+   - fa-envelope (E-Mail)
+   - fa-phone (Telefon)
+   - fa-calendar (Kalender)
+   - fa-rocket (Rakete)
+   - fa-arrow-right (Pfeil)
+   Liste: fontawesome.com/icons
+
+3. LINK ÄNDERN:
+   <a href="DEINE-URL">
+
+4. FARBEN ANPASSEN (CSS Variables Zeile 51-55):
+   --primary-color: #DEINEHEX
+   --primary-light: #DEINEHEX
+
+5. GRÖßE ANPASSEN:
+   Klasse hinzufügen: class="cta-button cta-primary small"
+   Oder CSS Variables ändern (Zeile 58-61)
+
+6. BUTTON STYLE WÄHLEN:
+   - cta-primary (Gradient Fill)
+   - cta-secondary (Frosted Glass)
+   - cta-outline (Border Only)
+
+7. ZUSÄTZLICHE FEATURES:
+   - .loading → Spinner-Animation
+   - .disabled → Deaktiviert
+   - .full-width → Volle Breite
+   - .small / .large → Größenvarianten
+
+8. ICON ENTFERNEN:
+   Einfach <i>...</i> Tag löschen
+
+9. NUR ICON (Kein Text):
+   <span> Tag löschen, nur <i> behalten
+
+10. MEHRERE BUTTONS NEBENEINANDER:
+    Einfach weitere <a class="cta-button"> hinzufügen
+    Layout passt sich automatisch an
+
+============================================================
+BEISPIELE FÜR SCHNELLE ANPASSUNG:
+============================================================
+
+<!-- Großer Primary Button -->
+<a href="#" class="cta-button cta-primary large">
+    <i class="fas fa-rocket"></i>
+    <span>Jetzt starten!</span>
+</a>
+
+<!-- Kleiner Outline Button ohne Icon -->
+<a href="#" class="cta-button cta-outline small">
+    <span>Mehr erfahren</span>
+</a>
+
+<!-- Full Width Secondary Button -->
+<a href="#" class="cta-button cta-secondary full-width">
+    <i class="fas fa-download"></i>
+    <span>Kostenlos herunterladen</span>
+</a>
+
+<!-- Loading State -->
+<a href="#" class="cta-button cta-primary loading">
+    <i class="fas fa-spinner"></i>
+    <span>Lädt...</span>
+</a>
+
+============================================================
+-->

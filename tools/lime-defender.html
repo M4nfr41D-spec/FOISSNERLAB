@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="robots" content="noindex, nofollow"><title>FOISSNER LAB — Mini-Shooter</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:#0c0c0e;font-family:'Inter',system-ui,sans-serif;color:#f2f1ee;-webkit-user-select:none;user-select:none;touch-action:none}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+canvas{display:block;background:radial-gradient(120% 90% at 50% 0%,#141417,#0c0c0e);box-shadow:0 0 0 1px rgba(143,209,79,.12),0 30px 80px -20px #000}
+.hud{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:16px 20px;font-family:'Space Grotesk';font-size:14px;letter-spacing:.08em;pointer-events:none;z-index:5}
+.hud .v{color:#8fd14f;text-shadow:0 0 10px rgba(143,209,79,.5)}
+.hud .lab{color:#a2a2ac;font-size:11px;letter-spacing:.16em;text-transform:uppercase}
+.overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;background:radial-gradient(circle,rgba(9,9,11,.6),rgba(9,9,11,.92));z-index:10;backdrop-filter:blur(3px)}
+.overlay.hide{display:none}
+.overlay .eb{font-family:'Space Grotesk';font-size:12px;font-weight:600;letter-spacing:.34em;text-transform:uppercase;color:#8fd14f;margin-bottom:14px}
+.overlay h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(32px,7vw,56px);letter-spacing:-.5px;line-height:1;margin-bottom:14px}
+.overlay h1 b{color:#8fd14f}
+.overlay p{color:#a2a2ac;max-width:340px;margin-bottom:26px;font-size:14.5px;line-height:1.6}
+.overlay .sc{font-family:'Space Grotesk';font-size:20px;margin-bottom:24px}.overlay .sc b{color:#8fd14f;font-size:34px;display:block}
+.btn{font-family:'Space Grotesk';font-weight:600;font-size:14px;letter-spacing:.1em;text-transform:uppercase;padding:15px 32px;border:none;border-radius:9px;background:#8fd14f;color:#0c0c0e;cursor:pointer;transition:.3s}
+.btn:hover{box-shadow:0 0 26px rgba(166,232,106,.6);transform:translateY(-2px)}
+.back{position:absolute;top:16px;left:50%;transform:translateX(-50%);font-family:'Space Grotesk';font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#646470;text-decoration:none;z-index:6}
+.back:hover{color:#8fd14f}
+.keys{margin-top:20px;font-size:12px;color:#646470;line-height:1.8}
+.keys b{color:#a2a2ac}
+</style></head>
+<body>
+<div id="stage"><canvas id="c"></canvas></div>
+<div class="hud"><div><span class="lab">Score</span> <span class="v" id="score">0</span></div>
+<div><span class="lab">Welle</span> <span class="v" id="wave">1</span></div>
+<div><span class="lab">Schiffe</span> <span class="v" id="lives">3</span></div></div>
+<a class="back" href="../game-labs.html">← Game Labs</a>
+
+<div class="overlay" id="start">
+  <span class="eb">FOISSNER LAB · Mini-Shooter</span>
+  <h1>LIME <b>DEFENDER</b></h1>
+  <p>Wehre die Wellen ab. Bewege dich, ziele, überlebe.</p>
+  <button class="btn" id="startBtn">Start</button>
+  <div class="keys"><b>Desktop:</b> ← → oder A/D bewegen · Leertaste / Maus = Feuer<br><b>Mobile:</b> ziehen zum Bewegen · Auto-Feuer</div>
+</div>
+
+<div class="overlay hide" id="over">
+  <span class="eb">Game Over</span>
+  <h1>WELLE <b id="ovWave">1</b></h1>
+  <div class="sc">Score <b id="ovScore">0</b></div>
+  <button class="btn" id="retryBtn">Nochmal</button>
+</div>
+
+<script>
+const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+const elScore=document.getElementById('score'),elWave=document.getElementById('wave'),elLives=document.getElementById('lives');
+let W,H,DPR=Math.min(devicePixelRatio||1,2);
+function resize(){
+  const maxW=Math.min(innerWidth,520),maxH=innerHeight;
+  cv.style.width=maxW+'px';cv.style.height=maxH+'px';
+  W=cv.width=maxW*DPR;H=cv.height=maxH*DPR;
+}
+addEventListener('resize',resize);resize();
+
+const LIME='#8fd14f',GLOW='rgba(166,232,106,';
+let state='start',score=0,wave=1,lives=3;
+let player,bullets,enemies,eb,particles,stars,keys={},shootCD=0,spawnTimer=0,toSpawn=0,enemyShootCD=0;
+let pointerX=null,firing=false;
+
+function reset(){
+  score=0;wave=1;lives=3;
+  player={x:W/2,y:H-70*DPR,w:30*DPR,h:26*DPR,cool:0};
+  bullets=[];enemies=[];eb=[];particles=[];
+  stars=[];for(let i=0;i<70;i++)stars.push({x:Math.random()*W,y:Math.random()*H,z:Math.random()*1+.3});
+  startWave();
+  sync();
+}
+function startWave(){toSpawn=4+wave*2;spawnTimer=0;}
+function sync(){elScore.textContent=score;elWave.textContent=wave;elLives.textContent=lives;}
+
+function spawnEnemy(){
+  const m=24*DPR;
+  enemies.push({x:m+Math.random()*(W-2*m),y:-30*DPR,w:26*DPR,h:24*DPR,
+    vx:(Math.random()<.5?-1:1)*(.6+Math.random()*.7)*DPR,vy:(.5+wave*.06+Math.random()*.4)*DPR,
+    hp:1+(wave>4?1:0),t:Math.random()*6.28});
+}
+function burst(x,y,col,n){for(let i=0;i<n;i++){const a=Math.random()*6.28,s=(1+Math.random()*3)*DPR;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,col});}}
+
+// input
+addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if([' ','arrowleft','arrowright'].includes(e.key.toLowerCase()))e.preventDefault();});
+addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false;});
+cv.addEventListener('mousemove',e=>{const r=cv.getBoundingClientRect();pointerX=(e.clientX-r.left)*DPR;});
+cv.addEventListener('mousedown',()=>firing=true);addEventListener('mouseup',()=>firing=false);
+function touch(e){const r=cv.getBoundingClientRect();pointerX=(e.touches[0].clientX-r.left)*DPR;firing=true;e.preventDefault();}
+cv.addEventListener('touchstart',touch,{passive:false});cv.addEventListener('touchmove',touch,{passive:false});
+cv.addEventListener('touchend',()=>{firing=false;});
+
+function update(){
+  // stars
+  stars.forEach(s=>{s.y+=s.z*1.4*DPR;if(s.y>H){s.y=0;s.x=Math.random()*W;}});
+  if(state!=='play')return;
+  // move player
+  const sp=6*DPR;
+  if(keys['arrowleft']||keys['a'])player.x-=sp;
+  if(keys['arrowright']||keys['d'])player.x+=sp;
+  if(pointerX!=null)player.x+=(pointerX-player.x)*.22;
+  player.x=Math.max(player.w/2,Math.min(W-player.w/2,player.x));
+  // shooting
+  player.cool--;
+  const wantFire=firing||keys[' ']|| (('ontouchstart'in window)&&pointerX!=null);
+  if(wantFire&&player.cool<=0){bullets.push({x:player.x,y:player.y-player.h,vy:-10*DPR});player.cool=9;}
+  bullets.forEach(b=>b.y+=b.vy);bullets=bullets.filter(b=>b.y>-20);
+  // spawn
+  spawnTimer--;
+  if(toSpawn>0&&spawnTimer<=0){spawnEnemy();toSpawn--;spawnTimer=26-Math.min(wave*1.5,16);}
+  if(toSpawn===0&&enemies.length===0){wave++;startWave();sync();}
+  // enemies
+  enemyShootCD--;
+  enemies.forEach(en=>{
+    en.t+=0.04;en.x+=en.vx+Math.cos(en.t)*.4*DPR;en.y+=en.vy;
+    if(en.x<en.w/2||en.x>W-en.w/2)en.vx*=-1;
+    if(en.y>H+30*DPR){en.dead=true;}
+    if(enemyShootCD<=0&&Math.random()<0.02&&en.y<H*.6){eb.push({x:en.x,y:en.y+en.h,vy:(3.4+wave*.15)*DPR});enemyShootCD=20;}
+    // hit player?
+    if(Math.abs(en.x-player.x)<(en.w+player.w)/2-6*DPR&&Math.abs(en.y-player.y)<(en.h+player.h)/2-4*DPR){en.dead=true;hitPlayer();}
+  });
+  // bullet-enemy
+  bullets.forEach(b=>{enemies.forEach(en=>{if(!en.dead&&Math.abs(b.x-en.x)<en.w/2&&Math.abs(b.y-en.y)<en.h/2){en.hp--;b.dead=true;burst(b.x,b.y,LIME,6);if(en.hp<=0){en.dead=true;score+=10*wave;burst(en.x,en.y,LIME,16);sync();}}});});
+  bullets=bullets.filter(b=>!b.dead);
+  enemies=enemies.filter(en=>!en.dead);
+  // enemy bullets
+  eb.forEach(b=>{b.y+=b.vy;if(Math.abs(b.x-player.x)<player.w/2&&Math.abs(b.y-player.y)<player.h/2){b.dead=true;hitPlayer();}});
+  eb=eb.filter(b=>!b.dead&&b.y<H+20);
+  // particles
+  particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vx*=.94;p.vy*=.94;p.life-=.03;});
+  particles=particles.filter(p=>p.life>0);
+}
+function hitPlayer(){lives--;burst(player.x,player.y,'rgba(255,90,70,',24);sync();if(lives<=0)gameOver();}
+
+function drawShip(x,y,w,h,col,flip){
+  ctx.save();ctx.translate(x,y);if(flip)ctx.scale(1,-1);
+  ctx.shadowColor=col;ctx.shadowBlur=14*DPR;ctx.fillStyle=col;ctx.beginPath();
+  ctx.moveTo(0,-h/2);ctx.lineTo(w/2,h/2);ctx.lineTo(0,h/3);ctx.lineTo(-w/2,h/2);ctx.closePath();ctx.fill();
+  ctx.shadowBlur=0;ctx.restore();
+}
+function render(){
+  ctx.clearRect(0,0,W,H);
+  // grid
+  ctx.strokeStyle='rgba(143,209,79,.04)';ctx.lineWidth=1;const g=60*DPR;
+  for(let x=0;x<W;x+=g){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=g){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  // stars
+  stars.forEach(s=>{ctx.globalAlpha=s.z*.6;ctx.fillStyle='#8fd14f';ctx.fillRect(s.x,s.y,2*DPR*s.z,2*DPR*s.z);});ctx.globalAlpha=1;
+  if(state==='play'||state==='over'){
+    // particles
+    particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=p.col.charAt(0)==='#'?p.col:(p.col+p.life+')');ctx.beginPath();ctx.arc(p.x,p.y,2.4*DPR,0,6.28);ctx.fill();});ctx.globalAlpha=1;
+    // bullets
+    ctx.fillStyle=LIME;ctx.shadowColor=LIME;ctx.shadowBlur=8*DPR;
+    bullets.forEach(b=>ctx.fillRect(b.x-1.5*DPR,b.y,3*DPR,12*DPR));ctx.shadowBlur=0;
+    // enemy bullets
+    ctx.fillStyle='#ff6b4a';ctx.shadowColor='#ff6b4a';ctx.shadowBlur=8*DPR;
+    eb.forEach(b=>ctx.fillRect(b.x-1.5*DPR,b.y,3*DPR,10*DPR));ctx.shadowBlur=0;
+    // enemies
+    enemies.forEach(en=>drawShip(en.x,en.y,en.w,en.h,'#8fd14f',true));
+    // player
+    if(state==='play')drawShip(player.x,player.y,player.w,player.h,LIME,false);
+  }
+}
+function loop(){update();render();requestAnimationFrame(loop);}
+
+function start(){reset();state='play';document.getElementById('start').classList.add('hide');document.getElementById('over').classList.add('hide');}
+function gameOver(){state='over';document.getElementById('ovScore').textContent=score;document.getElementById('ovWave').textContent=wave;document.getElementById('over').classList.remove('hide');}
+document.getElementById('startBtn').onclick=start;
+document.getElementById('retryBtn').onclick=start;
+// init stars for menu bg
+stars=[];for(let i=0;i<70;i++)stars.push({x:Math.random()*W,y:Math.random()*H,z:Math.random()*1+.3});
+loop();
+</script>
+</body></html>
